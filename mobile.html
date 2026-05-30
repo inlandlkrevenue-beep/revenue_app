@@ -90,6 +90,7 @@
 
     if (!mobileToken) {
       errorBox.hidden = false;
+      successBox.hidden = true;
     } else {
       successBox.hidden = false;
       fetch(API_BASE_URL + '/track-mobile.php', {
