@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Email Security Training</title>
+  <style>
+    :root {
+      color: #f5f8ff;
+      background: #071a3c;
+      font-family: Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      align-items: center;
+      background: linear-gradient(120deg, #061226, #09265a);
+      display: flex;
+      justify-content: center;
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .panel {
+      background: rgba(8, 26, 65, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+      max-width: 430px;
+      padding: 28px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .eyebrow {
+      color: rgba(228, 236, 250, 0.72);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin: 12px 0;
+    }
+
+    p {
+      color: rgba(228, 236, 250, 0.78);
+      line-height: 1.6;
+    }
+
+    .qr-box {
+      background: #ffffff;
+      border-radius: 8px;
+      display: inline-flex;
+      margin-top: 16px;
+      padding: 14px;
+    }
+
+    .qr-box img {
+      display: block;
+      height: auto;
+      max-width: 100%;
+    }
+
+    .error {
+      background: rgba(180, 35, 24, 0.22);
+      border: 1px solid rgba(254, 202, 202, 0.28);
+      border-radius: 8px;
+      color: #fecaca;
+      margin-top: 16px;
+      padding: 12px;
+    }
+  </style>
+</head>
+<body>
+  <main class="panel">
+    <div class="eyebrow">Email Security Campaign</div>
+    <h1>Training Checkpoint</h1>
+    <p>Please scan this QR code from your mobile device to continue the approved awareness exercise.</p>
+    <div id="qrBox" class="qr-box" hidden>
+      <img id="qrImage" alt="Mobile training QR code" width="220" height="220">
+    </div>
+    <div id="errorBox" class="error" hidden>Campaign token is missing.</div>
+  </main>
+
+  <script>
+    const API_BASE_URL = 'https://survey.mclarens.lk/sc/public/api';
+    const params = new URLSearchParams(window.location.search);
+    const webToken = params.get('web_token') || '';
+    const mobileToken = params.get('mobile_token') || '';
+    const qrBox = document.getElementById('qrBox');
+    const qrImage = document.getElementById('qrImage');
+    const errorBox = document.getElementById('errorBox');
+
+    if (!webToken || !mobileToken) {
+      errorBox.hidden = false;
+    } else {
+      const mobileUrl = new URL('mobile.html', window.location.href);
+      mobileUrl.search = new URLSearchParams({ mobile_token: mobileToken }).toString();
+      qrImage.src = 'https://api.qrserver.com/v1/create-qr-code/?' + new URLSearchParams({
+        size: '220x220',
+        data: mobileUrl.toString(),
+        margin: '12'
+      }).toString();
+      qrBox.hidden = false;
+
+      fetch(API_BASE_URL + '/track-web.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ web_token: webToken })
+      }).catch(() => {});
+    }
+  </script>
+</body>
+</html>
