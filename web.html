@@ -97,6 +97,8 @@
     const qrImage = document.getElementById('qrImage');
     const errorBox = document.getElementById('errorBox');
 
+    qrBox.hidden = true;
+
     if (!webToken || !mobileToken) {
       errorBox.hidden = false;
     } else {
